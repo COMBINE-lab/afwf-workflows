@@ -13,5 +13,18 @@ NullOrDefaultK = fun label value =>
   if std.to_string value == "null" then 
     default-k
   else
-    value
+    value,
+
+ComputeFrom = fun label kmer_rec value =>
+  if std.to_string value == "null" then
+    kmer_rec.value
+  else
+    value,
+
+ceil = fun val =>
+  if std.number.fract val == 0 then
+    std.number.truncate val
+  else
+    std.number.truncate ((1.0 - std.number.fract val) + val)
+
 } in utils 
