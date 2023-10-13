@@ -9,7 +9,7 @@
 # All fields that are null, empty array ([]), and empty dictionary ({}) will be pruned (ignored).
 # NOTE =  You can pass optional simpleaf arguments specified in the "Optional Configuration" section.
 #############################################################################
-let { NumberOrNull, .. } = import "type-schemas.ncl" in 
+let utils = import "type-schemas.ncl" in 
 let workflow = {
 
     # Meta information about the workflow
@@ -25,7 +25,7 @@ let workflow = {
           this value will be assigned to all simpleaf commands that have no --threads
           arg specified. Optional commands will use their default setting if this is null.
           "%
-          | NumberOrNull
+          | utils.NumberOrNull
           | default = null, 
         
         output 
@@ -70,14 +70,22 @@ let workflow = {
               | [| 'splici, 'spliceu, 'direct-ref |]
               | default = 'splici,
 
+            custom-ref-gtf 
+              | doc "If using the splici or spliceu reference, use this gtf"
+              = null,
+
+            custom-ref-fasta
+              | doc "If using the splici or spliceu reference, use this fasta"
+              = null,
+
             splici-params = {
                 "--fasta" 
                   | doc "genome fasta file of the studied species"
-                  = null,
+                  = custom-ref-fasta,
  
                 "--gtf" 
                   | doc "gene annotation gtf file of the studied species"
-                  = null,
+                  = custom-ref-gtf,
 
                 "--rlen" 
                   | Number 
@@ -146,11 +154,11 @@ let workflow = {
                 # spliced + unspliced transcriptome
                 # https = //pyroe.readthedocs.io/en/latest/building_splici_index.html#preparing-a-spliced-unspliced-transcriptome-reference
                 # specify reference type as spliced+unspliced (spliceu)
-                "--ref-type" =  null, # "--ref-type": "spliced+unspliced",
+                "--ref-type" =  "spliceu", # "--ref-type": "spliced+unspliced",
                 # The path to the genome FASTA file
-                "--fasta" =  null,
+                "--fasta" =  recommended-config.simpleaf_index.custom-ref-fasta,
                 # The path to the gene annotation GTF file
-                "--gtf" =  null,
+                "--gtf" =  recommended-config.simpleaf_index.custom-ref-gtf,
             },
 
             direct-ref-params
@@ -165,14 +173,14 @@ let workflow = {
                     =  null,
             },
 
-            # If null, this argument will be automatically completed by the template.
+            # If null, these arguments will be completed by the template.
             "--output" =  null,
             "--spliced" =  null,
             "--unspliced" =  null,
             "--threads" =  null,
             "--dedup" =  null,
             "--sparse" =  null,
-            "--kmer-length" =  null,
+            "--kmer-length" | utils.NullOrDefaultK =  null,
             "--overwrite" =  null,
             "--use-piscem" =  meta-info.use-piscem,
             "--minimizer-length" =  null,
