@@ -43,15 +43,14 @@ let workflow = {
           | default = true 
     },
 
-#######################################################################################################################
-# *Recommended* Configuration =  
-#  For MOST users, the fields listed in the "Recommended Configuration" section are the only fields
-#  that needs to be filled. You should replace all null values with valid values, 
-#  as described in the comment lines (those start with double slashes `#`) .
-
-# For advanced users, you can check other simpleaf arguments listed in the "Optional Configurtion" section.
-######################################################################################################################
-    
+    #######################################################################################################################
+    # *Recommended* Configuration =  
+    #  For MOST users, the fields listed in the "Recommended Configuration" section are the only fields
+    #  that needs to be filled. You should replace all null values with valid values, 
+    #  as described in the comment lines (those start with double slashes `#`) .
+    # For advanced users, you can check other simpleaf arguments listed in the "Optional Configurtion" section.
+    ######################################################################################################################
+        
     # **For most users**, ONLY the information in the "Recommended Configuration" section needs to be completed.
     # For advanced usage, please check the "Optional Configuration" field.
     recommended-config = {
@@ -211,21 +210,6 @@ let workflow = {
             # Simpleaf will find the correct t2g map file for splici and spliceu reference.
             # This is required ONLY if `--ref-seq` is specified in the corresponding simpleaf index command. 
             "--t2g-map" =  null,
-
-            # Option 1 = 
-            # If you have built the reference index already, 
-            # you can change the Step of the simpleaf index call above to a quoted negative integer,
-            # and specify the path to the index here  
-            map-reads-params | not_exported =  {
-                # read1 (technical reads) files separated by comma (,)
-                "--reads1" =  null,
-
-                # read2 (biological reads) files separated by comma (,)
-                "--reads2" =  null,
-
-                # the path to an EXISTING salmon/piscem reference index
-                "--index" =  null, #"%{optional-config.simpleaf_index."--output"}/index"
-            },
 
             # Option 2 = 
             # Choose only if you have an existing mapping directory and don"t want to rerun mapping
