@@ -31,16 +31,11 @@ optional-config = {
 simpleaf_index = {
             # If null, these arguments will be completed by the template.
             "--output" =  null,
-            "--spliced" =  null,
-            "--unspliced" =  null,
             "--threads" =  null,
-            "--dedup" =  null,
-            "--sparse" =  null,
             "--kmer-length" | default =  31,
-            "--overwrite" =  null,
+            "--overwrite" | default = if simpleaf_index."--use-piscem" then true else false,
             "--minimizer-length" 
               | default = ceil((simpleaf_index."--kmer-length") / 1.8) + 1,
-            "--keep-duplicates" =  null,
   }
 }
 } in utils 
