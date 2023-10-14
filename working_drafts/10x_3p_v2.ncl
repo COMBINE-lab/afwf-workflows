@@ -180,11 +180,10 @@ let workflow = {
             "--threads" =  null,
             "--dedup" =  null,
             "--sparse" =  null,
-            "--kmer-length" | default =  31,
+            "--kmer-length" | optional = 24,
             "--overwrite" =  null,
             "--use-piscem" =  meta-info.use-piscem,
-            "--minimizer-length" 
-              | default = utils.ceil((optional-config.simpleaf_index."--kmer-length") / 1.8) + 1,
+            "--minimizer-length" | optional,
             "--keep-duplicates" =  null,
         },
 
@@ -263,4 +262,4 @@ let workflow = {
     }
 } 
 in 
-workflow.meta-info & workflow.recommended-config & workflow.optional-config
+workflow.meta-info & workflow.recommended-config & workflow.optional-config & utils.optional-config

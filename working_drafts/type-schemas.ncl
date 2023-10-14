@@ -25,6 +25,22 @@ ceil = fun val =>
   if std.number.fract val == 0 then
     std.number.truncate val
   else
-    std.number.truncate ((1.0 - std.number.fract val) + val)
+    std.number.truncate ((1.0 - std.number.fract val) + val),
 
+optional-config = {
+simpleaf_index = {
+            # If null, these arguments will be completed by the template.
+            "--output" =  null,
+            "--spliced" =  null,
+            "--unspliced" =  null,
+            "--threads" =  null,
+            "--dedup" =  null,
+            "--sparse" =  null,
+            "--kmer-length" | default =  31,
+            "--overwrite" =  null,
+            "--minimizer-length" 
+              | default = ceil((simpleaf_index."--kmer-length") / 1.8) + 1,
+            "--keep-duplicates" =  null,
+  }
+}
 } in utils 
