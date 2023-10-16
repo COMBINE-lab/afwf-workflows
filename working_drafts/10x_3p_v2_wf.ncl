@@ -27,21 +27,19 @@ let workflow = {
           "%
           | utils.NumberOrNull
           | default = 16, 
-        
-        output 
-          | doc m%"
-          The parent directory of all simpleaf command output folders.
-          If this is left as null, you must specify `--output` when running `simpleaf workflow`
-          "%
-          | optional
-          | default = null, 
-
         # this meta flag says if piscem, instead of the default choice salmon, should be used for indexing and mapping for all applicable simpleaf commands.
         use-piscem
           | Bool
           | doc "if true, use piscem rather than salmon; if false use salmon"
           | default = true,
 
+        output  
+          | doc m%"
+          The parent directory of all simpleaf command output folders.
+          If this is left as null, you must specify `--output` when running `simpleaf workflow`
+          "%
+          | String
+          | default = "WHAT",
     },
 
     #######################################################################################################################
@@ -54,7 +52,7 @@ let workflow = {
         
     # **For most users**, ONLY the information in the "Recommended Configuration" section needs to be completed.
     # For advanced usage, please check the "Optional Configuration" field.
-    recommended-config = {
+    recommended-config | not_exported = {
         # Arguments for running `simpleaf index`
         simpleaf_index = {
             # these two fields are required for all command records.
@@ -158,7 +156,7 @@ let workflow = {
     # you can also change their "Active" to false.
     # Simpleaf will ignore all commands with "Active" =  false
     #########################################################################################################
-    optional-config =  {
+    optional-config | not_exported =  {
         # Optioanal arguments for running `simpleaf index`
         simpleaf_index =  {
             active | Bool =  true,
@@ -190,7 +188,7 @@ let workflow = {
             # These are optional parameters. If values are assigned to them 
             # then they will be used, otherwise default values will be filled 
             # in from the utility template.
-            "--output" =  meta-info.output,
+            "--output" =  "%{meta-info.output}",
             "--spliced" | optional,
             "--unspliced" | optional,
             "--threads" =  meta-info.threads,
@@ -273,14 +271,16 @@ let workflow = {
                 "--expected-ori" | String =  "fw",
 
                 # If null, this argument will be automatically completed by the template.
-                "--output" =  meta-info.output,
+                "--output" =  "%{meta-info.output}",
 
                 # If "--threads" is null but the "threads" meta info field is not,
                 # "threads" meta data will be used to complete this "--threads".
                 "--threads" =  meta-info.threads,
                 "--min-reads" | optional,
             },
-        }
+        },
+
+        config = recommended-config & optional-config & utils.optional-config,
 } 
-in 
-workflow.meta-info & workflow.recommended-config & workflow.optional-config & utils.optional-config
+in workflow
+
