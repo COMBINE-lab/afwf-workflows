@@ -221,7 +221,7 @@ let workflow = {
           mapping-params | not_exported = mapping-type |> match {
             'map-reads => map-reads-params,
             'existing-mappings => optional-config.simpleaf_quant.existing-mappings-params
-          }
+          },
 
           cell-filtering-type 
             | not_exported
