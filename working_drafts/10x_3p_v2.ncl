@@ -66,53 +66,6 @@ let workflow = {
             | doc "If using the splici or spliceu reference, use this fasta"
             = null,
 
-          ## need the below defined here for simpleaf_index, as they 
-          # need to be merged with that record.
-          #
-          # This selects what type of reference will be built. If you 
-          # want to use the default recommended index type (currently splici),
-          # then you can leave this value as is, and fill in the 
-          # splici-params field below as appropriate
-          reference-type 
-            | not_exported
-            | doc "The type of reference to create"
-            | [| 'splici, 'spliceu, 'direct-ref |]
-            | default = 'spliceu,
-
-          splici-params | not_exported = {
-            "--fasta" 
-              | doc "genome fasta file of the studied species"
-              = custom-ref-fasta,
-
-            "--gtf" 
-              | doc "gene annotation gtf file of the studied species"
-              = custom-ref-gtf,
-
-            "--rlen" 
-              | Number 
-              | doc m%"
-              read length, usually it is "98" for 10xv2 datasets.
-              Please check the description of your experiment to make sure
-              "% 
-              | default = 98,
-          },
-
-          # Recommeneded Reference =  spliced + intronic transcriptome (splici) 
-          # https = #pyroe.readthedocs.io/en/latest/building_splici_index.html#preparing-a-spliced-intronic-transcriptome-reference
-          # You can find other reference options in the "Optional Configuration" field. You must choose one type of reference
-          reference-info 
-            | not_exported
-            | doc m%"
-            How the reference that is indexed and mapped against is obtained. This will be an entry 
-            with the necessary information to create a splici (spliced+intronic) or spliceu (spliced+unspliced)
-            reference, or will be a "direct-reference" with the information on the target sequences to 
-            index directly.
-            "%
-            = reference-type |> match {
-              'splici => splici-params,
-                'spliceu => optional-config.simpleaf_index.spliceu-params,
-                'direct-ref => optional-config.simpleaf_index.direct-ref-params
-            }
         },
         #Information for running `simpleaf quant`
         simpleaf_quant_params | not_exported = {
@@ -157,7 +110,7 @@ let workflow = {
             # these two fields are required for all command records.
             step | Number = 1,
             program-name | String = "simpleaf index",
-        } & simpleaf_index_params.reference-info,
+        } & optional-config.simpleaf_index_params.reference-info,
 
         simpleaf_quant = {
             step | Number = 2,
@@ -173,6 +126,57 @@ let workflow = {
     # Simpleaf will ignore all commands with "Active" =  false
     #########################################################################################################
     optional-config | not_exported =  {
+
+        simpleaf_index_params | not_exported = {
+          ## need the below defined here for simpleaf_index, as they 
+          # need to be merged with that record.
+          #
+          # This selects what type of reference will be built. If you 
+          # want to use the default recommended index type (currently splici),
+          # then you can leave this value as is, and fill in the 
+          # splici-params field below as appropriate
+          reference-type 
+            | not_exported
+            | doc "The type of reference to create"
+            | [| 'splici, 'spliceu, 'direct-ref |]
+            | default = 'splici,
+
+          splici-params | not_exported = {
+            "--fasta" 
+              | doc "genome fasta file of the studied species"
+              = recommended-config.simpleaf_index_params.custom-ref-fasta,
+
+            "--gtf" 
+              | doc "gene annotation gtf file of the studied species"
+              = recommended-config.simpleaf_index_params.custom-ref-gtf,
+
+            "--rlen" 
+              | Number 
+              | doc m%"
+              read length, usually it is "98" for 10xv2 datasets.
+              Please check the description of your experiment to make sure
+              "% 
+              | default = 98,
+            },
+
+          # Recommeneded Reference =  spliced + intronic transcriptome (splici) 
+          # https = #pyroe.readthedocs.io/en/latest/building_splici_index.html#preparing-a-spliced-intronic-transcriptome-reference
+          # You can find other reference options in the "Optional Configuration" field. You must choose one type of reference
+          reference-info 
+            | not_exported
+            | doc m%"
+            How the reference that is indexed and mapped against is obtained. This will be an entry 
+            with the necessary information to create a splici (spliced+intronic) or spliceu (spliced+unspliced)
+            reference, or will be a "direct-reference" with the information on the target sequences to 
+            index directly.
+            "%
+            = reference-type |> match {
+              'splici => splici-params,
+                'spliceu => optional-config.simpleaf_index.spliceu-params,
+                'direct-ref => optional-config.simpleaf_index.direct-ref-params
+            }
+        },
+
         # Optioanal arguments for running `simpleaf index`
         simpleaf_index =  {
             active | Bool =  true,
