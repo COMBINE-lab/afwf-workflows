@@ -214,8 +214,8 @@ let workflow = {
           # Other mapping options can be found in the "Optional Configuration" section
           map-reads-params | not_exported = {
             "--index" = "%{meta-info.output}/simpleaf_index/index",
-            "--reads1" = reads1,
-            "--reads2" = reads2,
+            "--reads1" = recommended-config.simpleaf_quant_params.reads1,
+            "--reads2" = recommended-config.simpleaf_quant_params.reads2,
           },
 
           mapping-params | not_exported = mapping-type |> match {
