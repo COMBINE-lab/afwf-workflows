@@ -54,7 +54,8 @@ let workflow = {
         
     # **For most users**, ONLY the information in the "Recommended Configuration" section needs to be completed.
     # For advanced usage, please check the "Optional Configuration" field.
-    recommended-config = {
+    recommended-config 
+      | not_exported = {
         # Arguments for running `simpleaf index`
         simpleaf_index = {
             # these two fields are required for all command records.
@@ -158,7 +159,7 @@ let workflow = {
     # you can also change their "Active" to false.
     # Simpleaf will ignore all commands with "Active" =  false
     #########################################################################################################
-    optional-config =  {
+    optional-config | not_exported =  {
         # Optioanal arguments for running `simpleaf index`
         simpleaf_index =  {
             active | Bool =  true,
@@ -280,7 +281,8 @@ let workflow = {
                 "--threads" =  meta-info.threads,
                 "--min-reads" | optional,
             },
-        }
+        },
+
+      config = recommended-config & optional-config & utils.optional-config,
 } 
-in 
-workflow.meta-info & workflow.recommended-config & workflow.optional-config & utils.optional-config
+in workflow
