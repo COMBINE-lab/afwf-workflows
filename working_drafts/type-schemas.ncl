@@ -31,7 +31,6 @@ optional-config = {
 simpleaf_index = {
             # If null, these arguments will be completed by the template.
             "--output" =  null,
-            "--threads" =  null,
             "--kmer-length" | default =  31,
             "--overwrite" | default = if simpleaf_index."--use-piscem" then true else false,
             "--minimizer-length" 

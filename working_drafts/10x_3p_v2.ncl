@@ -118,15 +118,16 @@ let workflow = {
             step | Number = 2,
             program-name | String = "simpleaf quant",
 
-            mapping-type 
+            mapping-type
               | [| 'map-reads, 'existing-mappings |]
+              | not_exported
               | default = 'map-reads,
 
             mapping-params = mapping-type |> match {
                 'map-reads => map-reads-params,
                 'existing-mappings => optional-config.simpleaf_quant.existing-mappings-params
             },
-
+            
             # read1 (technical reads) files separated by comma (,)
             # having multiple files and they are all in a directory? try the following bash command to get their name (Don't forget to quote them!)
             # $ find -L your/fastq/absolute/path -name "*_R1_*" -type f | sort | paste -sd, -
@@ -265,20 +266,20 @@ let workflow = {
                 # If choosing this, change the null to the path to the whitelist file. 
                 explicit-pl-params | not_exported = {
                   "--explicit-pl" =  null, # or "--explicit-pl": "/path/to/pl",
-                }
+                },
+
+                "--chemistry" | String =  "10xv2",
+                "--resolution" | String =  "cr-like",
+                "--expected-ori" | String =  "fw",
+
+                # If null, this argument will be automatically completed by the template.
+                "--output" =  null,
+
+                # If "--threads" is null but the "threads" meta info field is not,
+                # "threads" meta data will be used to complete this "--threads".
+                "--threads" =  meta-info.threads,
+                "--min-reads" | optional,
             },
-
-            "--chemistry" | String =  "10xv2",
-            "--resolution" | String =  "cr-like",
-            "--expected-ori" | String =  "fw",
-
-            # If null, this argument will be automatically completed by the template.
-            "--output" =  null,
-
-            # If "--threads" is null but the "threads" meta info field is not,
-            # "threads" meta data will be used to complete this "--threads".
-            "--threads" =  meta-info.threads,
-            "--min-reads" | optional,
         }
 } 
 in 
