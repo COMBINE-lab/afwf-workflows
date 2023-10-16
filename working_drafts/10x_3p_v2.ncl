@@ -57,7 +57,7 @@ let workflow = {
     recommended-config 
       | not_exported = {
 
-        simpleaf_index_params = {
+        simpleaf_index_params | not_exported = {
           ## need the below defined here for simpleaf_index, as they 
           # need to be merged with that record.
           #
