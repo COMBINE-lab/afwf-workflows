@@ -157,6 +157,18 @@ let workflow = {
             }
         },
 
+        overwrite_record | not_exported = 
+          if meta-info.use-piscem then 
+            { "--overwrite" | default = "" }
+          else
+            { },
+
+        use_piscem_record | not_exported = 
+          if meta-info.use-piscem then 
+            { "--use-piscem" = "" }
+          else
+            { },
+
         # Optioanal arguments for running `simpleaf index`
         simpleaf_index =  {
             active | Bool =  true,
@@ -196,10 +208,9 @@ let workflow = {
             "--sparse" | Bool | optional,
             "--kmer-length" | optional,
             "--overwrite" | optional,
-            "--use-piscem" =  meta-info.use-piscem,
             "--minimizer-length" | optional,
             "--keep-duplicates" | Bool | optional,
-        },
+        } & use_piscem_record & overwrite_record,
 
         simpleaf_quant_params | not_exported = {
 
@@ -291,19 +302,18 @@ let workflow = {
                 "--map-dir" =  null,
             },
             
-            
-                "--chemistry" | String =  "10xv2",
-                "--resolution" | String =  "cr-like",
-                "--expected-ori" | String =  "fw",
+            "--chemistry" | String =  "10xv2",
+            "--resolution" | String =  "cr-like",
+            "--expected-ori" | String =  "fw",
 
-                # If null, this argument will be automatically completed by the template.
-                "--output" = "%{meta-info.output}/simpleaf_quant",
+            # If null, this argument will be automatically completed by the template.
+            "--output" = "%{meta-info.output}/simpleaf_quant",
 
-                # If "--threads" is null but the "threads" meta info field is not,
-                # "threads" meta data will be used to complete this "--threads".
-                "--threads" =  meta-info.threads,
-                "--min-reads" | optional,
-        } & simpleaf_quant_params.cell-filtering-params,
+            # If "--threads" is null but the "threads" meta info field is not,
+            # "threads" meta data will be used to complete this "--threads".
+            "--threads" =  meta-info.threads,
+            "--min-reads" | optional,
+        } & simpleaf_quant_params.cell-filtering-params & use_piscem_record,
       },
 
       workflow = recommended-config & optional-config & utils.optional-config,
