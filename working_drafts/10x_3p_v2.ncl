@@ -196,7 +196,7 @@ let workflow = {
             # These are optional parameters. If values are assigned to them 
             # then they will be used, otherwise default values will be filled 
             # in from the utility template.
-            "--output" =  "%{meta-info.output}/simpleaf_index/index",
+            "--output" =  "%{meta-info.output}/simpleaf_index",
             "--spliced" | optional,
             "--unspliced" | optional,
             "--threads" =  meta-info.threads,
