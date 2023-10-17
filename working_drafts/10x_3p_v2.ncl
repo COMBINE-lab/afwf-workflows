@@ -281,6 +281,7 @@ let workflow = {
 
         # arguments for running `simpleaf quant`
         simpleaf_quant =  {
+            active | Bool =  true,
             # The required fields first 
             # already defined in the recommended options
             # no need to redefine here
