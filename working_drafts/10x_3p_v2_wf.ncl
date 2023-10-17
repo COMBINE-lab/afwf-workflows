@@ -60,12 +60,11 @@ let workflow = {
         simpleaf_index_params | not_exported = {
           custom-ref-gtf 
             | doc "If using the splici or spliceu reference, use this gtf"
-            = null,
+            = "/mnt/scratch3/alevin_fry_submission/refs/refdata-gex-GRCh38-2020-A/genes/genes.gtf",
 
           custom-ref-fasta
             | doc "If using the splici or spliceu reference, use this fasta"
-            = null,
-
+            = "/mnt/scratch3/alevin_fry_submission/refs/refdata-gex-GRCh38-2020-A/fasta/genome.fa",
         },
         #Information for running `simpleaf quant`
         simpleaf_quant_params | not_exported = {
@@ -74,14 +73,14 @@ let workflow = {
             # $ find -L your/fastq/absolute/path -name "*_R1_*" -type f | sort | paste -sd, -
             # Change "*_R1_*" to the file name pattern of your files if it dosn't fit
             reads1
-              | not_exported = "reads1.fastq",
+              | not_exported = "/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758323_1.fastq.gz,/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758325_1.fastq.gz,/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758327_1.fastq.gz",
  
             # read2 (biological reads) files separated by comma (,)
             # having multiple files and they are all in a directory? try the following bash command to get their name (Don't forget to quote them!)
             # $ find -L your/fastq/absolute/path -name "*_R1_*" -type f | sort | paste -sd, -
             # Change "*_R1_*" to the file name pattern of your files if it dosn't fit
             reads2 
-              | not_exported = "reads2.fastq",
+              | not_exported = "/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758323_2.fastq.gz,/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758325_2.fastq.gz,/mnt/scratch4/dongze/simpleaf_workflow_patch/data/SRR8758327_2.fastq.gz",
         },
        
 
@@ -152,10 +151,22 @@ let workflow = {
             "%
             = reference-type |> match {
               'splici => splici-params,
-                'spliceu => optional-config.simpleaf_index.spliceu-params,
-                'direct-ref => optional-config.simpleaf_index.direct-ref-params
+              'spliceu => optional-config.simpleaf_index.spliceu-params,
+              'direct-ref => optional-config.simpleaf_index.direct-ref-params
             }
         },
+
+        overwrite_record | not_exported = 
+          if meta-info.use-piscem then 
+            { "--overwrite" | default = "" }
+          else
+            { },
+
+        use_piscem_record | not_exported = 
+          if meta-info.use-piscem then 
+            { "--use-piscem" = "" }
+          else
+            { },
 
         # Optioanal arguments for running `simpleaf index`
         simpleaf_index =  {
@@ -196,10 +207,9 @@ let workflow = {
             "--sparse" | Bool | optional,
             "--kmer-length" | optional,
             "--overwrite" | optional,
-            "--use-piscem" =  meta-info.use-piscem,
             "--minimizer-length" | optional,
             "--keep-duplicates" | Bool | optional,
-        },
+        } & use_piscem_record & overwrite_record,
 
         simpleaf_quant_params | not_exported = {
 
@@ -303,7 +313,7 @@ let workflow = {
                 # "threads" meta data will be used to complete this "--threads".
                 "--threads" =  meta-info.threads,
                 "--min-reads" | optional,
-        } & simpleaf_quant_params.cell-filtering-params,
+        } & simpleaf_quant_params.cell-filtering-params & use_piscem_record,
       },
 
       workflow = recommended-config & optional-config & utils.optional-config,
